@@ -1,0 +1,10 @@
+{
+	"main" : "${ORGANISATION}.${APPNAME.toLowerCase()}.${APPNAME}",
+	"port" : "${PORT}",
+	"app-name" : "${APPNAME}",
+	"app-address" : "/${APPNAME.toLowerCase()}",
+	"app-icon" : "${APPNAME.toLowerCase()}-large",
+	"mode": "dev",
+	"entcore.port" : 8090,
+	"auto-redeploy": true
+}

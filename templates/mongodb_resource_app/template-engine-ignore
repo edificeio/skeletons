@@ -1,0 +1,4 @@
+>template-engine-ignore
+>.DS_Store
+gradle
+icon-default.png

@@ -1,0 +1,71 @@
+<div class="row" ng-controller="FolderController">
+	<div class="row">
+		<h1 class="four cell" data-reload>
+			<a><i class="${APPNAME.toLowerCase()}"></i><span translate content="${APPNAME.toLowerCase()}.title"></span></a>
+		</h1>
+		<nav class="contextual-buttons eight cell">
+			<div class="action-buttons">
+				<button workflow="${APPNAME.toLowerCase()}.create" workflow="${APPNAME.toLowerCase()}.create" ng-click="new${APPNAME.toLowerCase()}()">
+					<i class="add"></i><span translate content="create"></span>
+				</button>
+			</div>
+			<div class="display-buttons" ng-if="template.contains('list', 'table-list') || template.contains('list', 'icons-list')">
+				<i class="show-list"
+				   ng-class="{ selected: template.contains('list', 'table-list') }"
+				   ng-click="openView('list', 'table-list')"></i>
+				<i class="show-icons"
+				   ng-class="{ selected: template.contains('list', 'icons-list') }"
+				   ng-click="openView('list', 'icons-list')"></i>
+			</div>
+		</nav>
+	</div>
+
+	<div class="row">
+		<section class="vertical four cell">
+			<nav class="vertical">
+				<ul>
+					<li>
+						<a workflow="${APPNAME.toLowerCase()}.create"
+						   ng-click="listMine()"
+						   translate content="${APPNAME.toLowerCase()}.mine"
+						   ng-class="{ selected: ${APPNAME.toLowerCase()}List.folder === 'mine' }"/>
+					</li>
+					<li>
+						<a ng-click="listShared()"
+						   translate content="${APPNAME.toLowerCase()}.shared"
+						   ng-class="{ selected: ${APPNAME.toLowerCase()}List.folder === 'shared' }"/>
+					</li>
+					<li>
+						<a workflow="${APPNAME.toLowerCase()}.create"
+						   ng-click="listDeleted()"
+						   translate content="${APPNAME.toLowerCase()}.trash"
+						   ng-class="{ selected: ${APPNAME.toLowerCase()}List.folder === 'trash' }"/>
+					</li>
+				</ul>
+			</nav>
+		</section>
+		<section class="eight cell">
+			<div ng-include="template.containers.list" class="row"></div>
+		</section>
+
+	</div>
+
+	<section class="toggle-buttons" ng-class="{ hide: ${APPNAME.toLowerCase()}List.selection().length === 0 }">
+		<div class="toggle block-container">
+			<div class="row">
+				<behaviour name="manager" resource="${APPNAME.toLowerCase()}List.selection()">
+					<button class="cell" translate content="edit" ng-if="${APPNAME.toLowerCase()}List.selection().length === 1 && ${APPNAME.toLowerCase()}List.folder !== 'trash'" ng-click="editInfos()"/>
+				</behaviour>
+				<behaviour name="manager" resource="${APPNAME.toLowerCase()}List.selection()">
+					<button class="cell" translate content="share" ng-if="${APPNAME.toLowerCase()}List.folder === 'mine'" ng-click="share${APPNAME.toLowerCase()}()"/>
+				</behaviour>
+				<behaviour name="manager" resource="${APPNAME.toLowerCase()}List.selection()">
+					<button class="cell" translate content="restore" ng-if="${APPNAME.toLowerCase()}List.folder === 'trash'" ng-click="${APPNAME.toLowerCase()}List.restore()"/>
+				</behaviour>
+				<behaviour name="manager" resource="${APPNAME.toLowerCase()}List.selection()">
+					<button class="cell" translate content="remove" ng-click="remove${APPNAME.toLowerCase()}()"/>
+				</behaviour>
+		</div>
+	</section>
+
+</div class="row">
