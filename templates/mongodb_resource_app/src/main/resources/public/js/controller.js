@@ -55,9 +55,9 @@ function FolderController(\$scope, \$rootScope, model, template){
 
 	var DEFAULT_VIEW = function(){
 		if(model.me.workflow.${APPNAME.toLowerCase()}.create !== true)
-			\$scope.listShared()
+			\$scope.folders["shared"].list()
 		else
-			\$scope.listMine()
+			\$scope.folders["mine"].list()
 	}
 
 	//////////////////////
@@ -73,27 +73,34 @@ function FolderController(\$scope, \$rootScope, model, template){
 			\$scope.openView('list', 'table-list')
 	}
 
-		//Owner//
-	\$scope.listMine = function(){
-		\$scope.filter${APPNAME} = {
-			"owner.userId": model.me.userId,
-			"trashed": 0
+	\$scope.folders = {
+		"mine": {
+			list: function(){
+				\$scope.filter${APPNAME} = {
+					"owner.userId": model.me.userId,
+					"trashed": 0
+				}
+				refreshListing("mine")
+			},
+			workflow: "${APPNAME.toLowerCase()}.create"
+		},
+		"shared": {
+			list: function(){
+				\$scope.filter${APPNAME} = function(item){
+					return item.owner.userId !== model.me.userId
+				}
+				refreshListing("shared")
+			}
+		},
+		"trash": {
+			list: function(){
+				\$scope.filter${APPNAME} = {
+					"trashed": 1
+				}
+				refreshListing("trash")
+			},
+			workflow: "${APPNAME.toLowerCase()}.create"
 		}
-		refreshListing("mine")
-	}
-		//Shared//
-	\$scope.listShared = function(){
-		\$scope.filter${APPNAME} = function(item){
-			return item.owner.userId !== model.me.userId
-		}
-		refreshListing("shared")
-	}
-		//Deleted//
-	\$scope.listDeleted = function(){
-		\$scope.filter${APPNAME} = {
-			"trashed": 1
-		}
-		refreshListing("trash")
 	}
 
 	//Deep filtering an Object based on another Object properties

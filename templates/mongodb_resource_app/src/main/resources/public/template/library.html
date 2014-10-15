@@ -24,22 +24,16 @@
 		<section class="vertical four cell">
 			<nav class="vertical">
 				<ul>
-					<li>
-						<a workflow="${APPNAME.toLowerCase()}.create"
-						   ng-click="listMine()"
-						   translate content="${APPNAME.toLowerCase()}.mine"
-						   ng-class="{ selected: ${APPNAME.toLowerCase()}List.folder === 'mine' }"/>
-					</li>
-					<li>
-						<a ng-click="listShared()"
-						   translate content="${APPNAME.toLowerCase()}.shared"
-						   ng-class="{ selected: ${APPNAME.toLowerCase()}List.folder === 'shared' }"/>
-					</li>
-					<li>
-						<a workflow="${APPNAME.toLowerCase()}.create"
-						   ng-click="listDeleted()"
-						   translate content="${APPNAME.toLowerCase()}.trash"
-						   ng-class="{ selected: ${APPNAME.toLowerCase()}List.folder === 'trash' }"/>
+					<li ng-repeat="(name, folderProps) in folders">
+						<a ng-if="!folderProps.workflow"
+						   ng-click="folderProps.list()"
+						   translate content="${APPNAME.toLowerCase()}.[[name]]"
+						   ng-class="{ selected: ${APPNAME.toLowerCase()}List.folder === name }"/>
+						<a ng-if="folderProps.workflow"
+						   workflow="[[folderProps.workflow]]"
+						   ng-click="folderProps.list()"
+						   translate content="${APPNAME.toLowerCase()}.[[name]]"
+						   ng-class="{ selected: ${APPNAME.toLowerCase()}List.folder === name }"/>
 					</li>
 				</ul>
 			</nav>
