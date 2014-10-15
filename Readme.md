@@ -1,4 +1,4 @@
-Ent-core gradle archetypes
+<center>Ent-core gradle archetypes</center>
 ==========================
 
 This project aims to ease the task of programmers by providing several ent-core archetypes
@@ -10,15 +10,14 @@ https://github.com/entcore/entcore
 
 ## Usage
 
-#### Dependencies :
+### Dependencies :
 
 - Gradle 1.6
 
-#### How to :
+### How to :
 
 - Open in an editor the file template-engine-properties and modify the contents to suit your needs
-- Launch the gradle task by typing in a terminal :
-        gradle buildArchetype
+- Launch the gradle task by typing in a terminal : ``gradle buildArchetype``
 
 You will be guided through the archetype generation which will prompt you several times for data.
 
@@ -47,7 +46,7 @@ You will be guided through the archetype generation which will prompt you severa
 
 ```
 
-#### File details
+## File details
 
 * **template-engine.properties**
 
@@ -82,5 +81,13 @@ You will be guided through the archetype generation which will prompt you severa
     There are two ways you can ignore a file :
     -   **Copy** the file or folder (including its contents) without parsing (which means no substitutions)<br>
     -   **Ignore completely** the file or folder.<br>
-        In this case, precede the file name with a ``>`` :<br>
-        ``>.DS_STORE``
+        In this case, precede the file name with a ``>``.<br>
+        For instance, the line ``>.DS_STORE`` makes the parser completely ignore files named *.DS_STORE*
+
+## Templates provided
+
+* **mongodb_resource_app**
+
+    This template creates an application to the location of your choice using a backend REST API with MongoDB bindings and a front-end interface allowing resource creation, deletion and sharing.
+
+    Once the application is generated you will have to register it inside an existing ent-core instance by copying the mod.json contents to the vert.x configuration file, then install it to your local repository by typing ``gradle install``.
