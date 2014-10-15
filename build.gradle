@@ -52,14 +52,14 @@ def createTemplate = { template_path, destination_path ->
         def full_path = "${template_path}/${line}"
         if(line.length() > 0 && file(full_path).isDirectory())
             if(line[0] == '>')
-                unparsed_directories.add(full_path[1..-1])
+                ignored_directories.add(full_path[1..-1])
             else
-                ignored_directories.add(full_path)
+                unparsed_directories.add(full_path)
         else if(line.length() > 0)
             if(line[0] == '>')
-                unparsed_files.add(line[1..-1])
+                ignored_files.add(line[1..-1])
             else
-                ignored_files.add(line)
+                unparsed_files.add(line)
     }
 
     def isIgnoredDirectory = { dir ->
@@ -129,11 +129,11 @@ def createTemplate = { template_path, destination_path ->
         //TODO : REGEX COMPARISON
         if(fileitem.isDirectory())
             if(isIgnoredDirectory(fileitem)){
-                //Copy the directory contents
-                FileUtils.copyDirectory(fileitem, file("${destination_path}/${path}${fileitem.name}"))
                 logger.quiet "\t(${fileitem.name} : Ignored)"
                 "${path}${fileitem.name}/"
             } else if(isUnparsedDirectory(fileitem)) {
+                //Copy the directory contents
+                FileUtils.copyDirectory(fileitem, file("${destination_path}/${path}${fileitem.name}"))
                 logger.quiet "\t(${fileitem.name} : Unparsed)"
                 "${path}${fileitem.name}/"
             } else {
@@ -141,11 +141,11 @@ def createTemplate = { template_path, destination_path ->
             }
         else
             if(isIgnoredFile(fileitem)){
-                //Copy the file
                 logger.quiet "\t(${fileitem.name} : Ignored)"
-                FileUtils.copyFile(fileitem, file("${destination_path}/${path}${fileitem.name}"))
                 path
             } else if(isUnparsedFile(fileitem)) {
+                //Copy the file
+                FileUtils.copyFile(fileitem, file("${destination_path}/${path}${fileitem.name}"))
                 logger.quiet "\t(${fileitem.name} : Unparsed)"
                 "${path}${fileitem.name}"
             } else {
