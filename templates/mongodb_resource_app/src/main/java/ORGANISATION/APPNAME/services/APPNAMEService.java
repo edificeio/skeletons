@@ -5,7 +5,7 @@ import org.vertx.java.core.Handler;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 
-import ${ORGANISATION}.webutils.Either;
+import fr.wseduc.webutils.Either;
 
 /**
  * Generic REST service for ${APPNAME}.

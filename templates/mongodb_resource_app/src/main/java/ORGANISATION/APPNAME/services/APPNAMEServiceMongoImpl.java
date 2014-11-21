@@ -42,7 +42,7 @@ public class ${APPNAME}ServiceMongoImpl extends MongoDbCrudService implements ${
 	public void list${APPNAME}(UserInfos user, Handler<Either<String, JsonArray>> handler) {
 		List<DBObject> groups = new ArrayList<>();
 		groups.add(QueryBuilder.start("userId").is(user.getUserId()).get());
-		for (String gpId : user.getProfilGroupsIds()) {
+		for (String gpId : user.getGroupsIds()) {
 			groups.add(QueryBuilder.start("groupId").is(gpId).get());
 		}
 

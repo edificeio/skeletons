@@ -1,6 +1,6 @@
 {
 	"main" : "${ORGANISATION}.${APPNAME.toLowerCase()}.${APPNAME}",
-	"port" : "${PORT}",
+	"port" : ${PORT},
 	"app-name" : "${APPNAME}",
 	"app-address" : "/${APPNAME.toLowerCase()}",
 	"app-icon" : "${APPNAME.toLowerCase()}-large",
