@@ -114,8 +114,14 @@ def createTemplate = { template_path, destination_path ->
             def specialName = bindings.find{ k, v -> file.name.contains(k) }
             def destinationFile
             if(specialName != null){
-                destinationFile = new File("${destination_path}/${path}${file.name.replaceAll(specialName.key, specialName.value)}")
-                logger.quiet "------- ${file.name} => ${file.name.replaceAll(specialName.key, specialName.value)}"
+                //Html file in lower case
+                if(file.name.contains('html')){
+                    destinationFile = new File("${destination_path}/${path}${file.name.replaceAll(specialName.key, specialName.value.toLowerCase())}")
+                    logger.quiet "------- ${file.name} => ${file.name.replaceAll(specialName.key, specialName.value.toLowerCase())}"
+                } else {
+                    destinationFile = new File("${destination_path}/${path}${file.name.replaceAll(specialName.key, specialName.value)}")
+                    logger.quiet "------- ${file.name} => ${file.name.replaceAll(specialName.key, specialName.value)}"
+                }
             } else
                 destinationFile = new File("${destination_path}/${path}${file.name}")
             def output = engine.createTemplate(file).make(bindings)
