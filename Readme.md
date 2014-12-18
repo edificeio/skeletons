@@ -86,6 +86,10 @@ You will be guided through the archetype generation which will prompt you severa
 
 ## Templates provided
 
+* **blank_app**
+
+    This template creates a blank application (ie: only the basic structure and empty files) to the location of your choice.
+
 * **mongodb_resource_app**
 
     This template creates an application to the location of your choice using a backend REST API with MongoDB bindings and a front-end interface allowing resource creation, deletion and sharing.
