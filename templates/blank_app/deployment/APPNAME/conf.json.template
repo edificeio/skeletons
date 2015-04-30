@@ -1,0 +1,18 @@
+    {
+      "name": "${ORGANISATION}~${APPNAME.toLowerCase()}~0.1-SNAPSHOT",
+      "config": {
+        "main" : "${ORGANISATION}.${APPNAME.toLowerCase()}.${APPNAME}",
+        "port" : ${PORT},
+        "app-name" : "${APPNAME}",
+    	"app-address" : "/${APPNAME.toLowerCase()}",
+    	"app-icon" : "${APPNAME}-large",
+        "host": "\${host}",
+        "ssl" : \$ssl,
+        "auto-redeploy": false,
+        "userbook-host": "\${host}",
+        "integration-mode" : "HTTP",
+        "app-registry.port" : 8012,
+        "mode" : "\${mode}",
+        "entcore.port" : 8009
+      }
+    }
