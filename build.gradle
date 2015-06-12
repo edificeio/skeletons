@@ -164,7 +164,7 @@ def createTemplate = { template_path, destination_path ->
 
 }
 
-task buildArchetype(description:'Generate a new project based on templates') << {
+task buildSkeleton(description:'Generate a new project based on templates') << {
 
     def console = System.console()
 

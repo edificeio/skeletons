@@ -1,7 +1,7 @@
-<center>Ent-core gradle archetypes</center>
+<center>Ent-core gradle skeletons</center>
 ==========================
 
-This project aims to ease the task of programmers by providing several ent-core archetypes
+This project aims to ease the task of programmers by providing several ent-core skeletons
 along with an easy-to-use gradle build system.
 
 For more information on ent-core, please visit the GitHub repository at the following address :
@@ -17,9 +17,9 @@ https://github.com/entcore/entcore
 ### How to :
 
 - Open in an editor the file template-engine-properties and modify the contents to suit your needs
-- Launch the gradle task by typing in a terminal : ``gradle buildArchetype``
+- Launch the gradle task by typing in a terminal : ``gradle buildSkeleton``
 
-You will be guided through the archetype generation which will prompt you several times for data.
+You will be guided through the skeleton generation which will prompt you several times for data.
 
 ## File tree
 
