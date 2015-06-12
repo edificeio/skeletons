@@ -5,7 +5,7 @@ This project aims to ease the task of programmers by providing several ent-core 
 along with an easy-to-use gradle build system.
 
 For more information on ent-core, please visit the GitHub repository at the following address :
-https://github.com/entcore/entcore
+http://entcore.org
 
 
 ## Usage
