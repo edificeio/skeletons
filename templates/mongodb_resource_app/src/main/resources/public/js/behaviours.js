@@ -1,47 +1,20 @@
-var ${APPNAME.toLowerCase()}Resources = {
-	read: {
-		right: "${ORGANISATION.replaceAll('[.]', '-')}-${APPNAME.toLowerCase()}-controllers-${APPNAME}Controller|get${APPNAME}"
-	},
-	contrib: {
-		right: "${ORGANISATION.replaceAll('[.]', '-')}-${APPNAME.toLowerCase()}-controllers-${APPNAME}Controller|update${APPNAME}"
-	},
-	manager: {
-		right: "${ORGANISATION.replaceAll('[.]', '-')}-${APPNAME.toLowerCase()}-controllers-${APPNAME}Controller|addRights"
-	}
-};
-
 Behaviours.register('${APPNAME.toLowerCase()}', {
 	rights: {
 		workflow: {
 			view: '${ORGANISATION}.${APPNAME.toLowerCase()}.controllers.${APPNAME}Controller|view',
 			create: '${ORGANISATION}.${APPNAME.toLowerCase()}.controllers.${APPNAME}Controller|create${APPNAME}'
-		}
-	},
-	dependencies: {},
-	resource: function(resource){
-		if(!resource.myRights){
-			resource.myRights = {};
-		}
-
-		for(var behaviour in ${APPNAME.toLowerCase()}Resources){
-			if(model.me.hasRight(resource, ${APPNAME.toLowerCase()}Resources[behaviour]) || model.me.userId === resource.owner.userId){
-				if(resource.myRights[behaviour] !== undefined){
-					resource.myRights[behaviour] = resource.myRights[behaviour] && ${APPNAME.toLowerCase()}Resources[behaviour];
-				}
-				else{
-					resource.myRights[behaviour] = ${APPNAME.toLowerCase()}Resources[behaviour];
-				}
+		},
+		resource: {
+			read: {
+				right: "${ORGANISATION.replaceAll('[.]', '-')}-${APPNAME.toLowerCase()}-controllers-${APPNAME}Controller|get${APPNAME}"
+			},
+			contrib: {
+				right: "${ORGANISATION.replaceAll('[.]', '-')}-${APPNAME.toLowerCase()}-controllers-${APPNAME}Controller|update${APPNAME}"
+			},
+			manager: {
+				right: "${ORGANISATION.replaceAll('[.]', '-')}-${APPNAME.toLowerCase()}-controllers-${APPNAME}Controller|addRights"
 			}
 		}
-
-		if(model.me.userId === resource.owner){
-			resource.myRights.share = ${APPNAME.toLowerCase()}Resources[behaviour];
-		}
-
-		return resource;
-	},
-	resourceRights: function(){
-		return ['read', 'contrib', 'manager']
 	},
 	loadResources: function(callback){
 		http().get('/${APPNAME.toLowerCase()}/list').done(function(${APPNAME.toLowerCase()}){
