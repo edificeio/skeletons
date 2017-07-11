@@ -4,6 +4,7 @@
 	"additionalProperties": false,
 	"properties": {
 		"title": 		{ "type": "string" },
+		"content": 		{ "type": "string" },
 		"thumbnail": 	{ "type": "string" },
 		"trashed": 		{ "type": "integer" }
 	}

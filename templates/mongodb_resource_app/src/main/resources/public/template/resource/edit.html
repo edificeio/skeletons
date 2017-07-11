@@ -1,0 +1,26 @@
+<div class="row" ng-controller="EditController">
+    <div class="row">
+        <side-panel class="zero-mobile">
+            <nav class="vertical">
+                <h2><i18n>list.title</i18n></h2>
+                <ul>
+                    <li ng-repeat="r in resources">
+                        <a ng-class="{'selected': r._id === ${APPNAME.toLowerCase()}._id}" ng-href="#/view/[[r._id]]">[[r.title]]</a>
+                    </li>
+                </ul>
+            </nav>
+        </side-panel>
+
+        <app-title>
+            <h1 class="breadcrumbs"><a ng-href="#/"><i18n>${APPNAME.toLowerCase()}.title</i18n></a><a>[[${APPNAME.toLowerCase()}.title]]</a></h1>
+        </app-title>
+    </div>
+    <div class="row">
+        <button ng-click="view(${APPNAME.toLowerCase()})"><i18n>view</i18n></button>
+    </div>
+    <div class="row">
+        <image-select ng-model="${APPNAME.toLowerCase()}.thumbnail" default="img/illustrations/image-default.svg" class="three cell horizontal-spacing"></image-select>
+        <input type="text" ng-model="${APPNAME.toLowerCase()}.title" class="nine cell" />
+        <editor ng-model="${APPNAME.toLowerCase()}.content" class="nine cell"></editor>
+    </div>
+</div>

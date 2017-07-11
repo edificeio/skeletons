@@ -114,8 +114,8 @@ def createTemplate = { template_path, destination_path ->
             def specialName = bindings.find{ k, v -> file.name.contains(k) }
             def destinationFile
             if(specialName != null){
-                //Html file in lower case
-                if(file.name.contains('html')){
+                //Html and ts files in lower case
+                if(file.name.contains('html') || file.name.contains('ts')){
                     destinationFile = new File("${destination_path}/${path}${file.name.replaceAll(specialName.key, specialName.value.toLowerCase())}")
                     logger.quiet "------- ${file.name} => ${file.name.replaceAll(specialName.key, specialName.value.toLowerCase())}"
                 } else {

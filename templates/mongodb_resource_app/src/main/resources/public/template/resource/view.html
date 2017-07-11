@@ -1,0 +1,29 @@
+<div class="row" ng-controller="ViewController">
+    <div class="row">
+        <side-panel class="zero-mobile">
+            <nav class="vertical">
+                <h2><i18n>list.title</i18n></h2>
+                <ul>
+                    <li ng-repeat="r in resources">
+                        <a ng-class="{'selected': r._id === ${APPNAME.toLowerCase()}._id}" ng-href="#/view/[[r._id]]">[[r.title]]</a>
+                    </li>
+                </ul>
+            </nav>
+        </side-panel>
+
+        <app-title>
+            <h1 class="breadcrumbs"><a ng-href="#/"><i18n>${APPNAME.toLowerCase()}.title</i18n></a><a>[[${APPNAME.toLowerCase()}.title]]</a></h1>
+        </app-title>
+    </div>
+    <div class="row">
+        <resource-right name="contrib" resource="${APPNAME.toLowerCase()}">
+            <button ng-click="edit(${APPNAME.toLowerCase()})"><i18n>edit</i18n></button>
+        </resource-right>
+    </div>
+    
+    <div class="row vertical-spacing">
+        <img skin-src="/img/illustrations/image-default.svg" alt="thumbnail" ng-if="!${APPNAME.toLowerCase()}.thumbnail" class="three cell horizontal-spacing">
+        <img ng-src="[[${APPNAME.toLowerCase()}.thumbnail]]?thumbnail=150x150" alt="thumbnail" ng-if="${APPNAME.toLowerCase()}.thumbnail" class="three cell horizontal-spacing" />
+        <article class="nine cell" bind-html="${APPNAME.toLowerCase()}.content"></article>
+    </div>
+</div>

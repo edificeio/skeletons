@@ -8,6 +8,9 @@
 		},
 	    "thumbnail": {
 			"type": "string"
+		},
+	    "content": {
+			"type": "string"
 		}
  	},
 	"required": [ "title" ]

@@ -1,0 +1,14 @@
+<div class="toggle-buttons" ng-class="{ hide: currentFolder.selection.length < 1 }">
+    <div class="toggle-buttons-label" ng-if="currentFolder.selection.length === 1 ">
+        <i class="info-pic"></i>
+        <em>[[currentFolder.selection.selected[0].title]]</em>
+    </div>
+    <div class="row toggle">
+        <button ng-click="lightbox('confirmRemove')">
+            <i18n>remove</i18n>
+        </button>
+        <button ng-click="restore()">
+            <i18n>restore</i18n>
+        </button>
+    </div>
+</div>
