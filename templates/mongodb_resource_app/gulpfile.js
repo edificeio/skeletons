@@ -49,7 +49,7 @@ gulp.task('build', ['rev'], () => {
 
 function getModName(fileContent){
     var getProp = function(prop){
-        return fileContent.split(prop + '=')[1].split(/\r|\n/)[0];
+        return fileContent.split(prop + '=')[1].split(/\\r?\\n/)[0];
     }
     return getProp('modowner') + '~' + getProp('modname') + '~' + getProp('version');
 }
