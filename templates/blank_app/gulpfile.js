@@ -25,6 +25,9 @@ gulp.task('copy-files', ['drop-cache'], () => {
 gulp.task('webpack', ['copy-files'], () => { 
     return gulp.src('./src/main/resources/public')
         .pipe(webpack(require('./webpack.config.js')))
+        .on('error', function handleError() {
+            this.emit('end'); // Recover from errors
+        })
         .pipe(gulp.dest('./src/main/resources/public/dist'));
 });
 
