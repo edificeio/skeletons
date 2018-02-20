@@ -5,5 +5,5 @@ import { ng } from 'entcore';
 	------------------
 	Main controller.
 **/
-export const mainController = ng.controller('MainController', ['$scope', 'route', (\$scope, route) => {
+export const mainController = ng.controller('MainController', ['\$scope', 'route', (\$scope, route) => {
 }]);

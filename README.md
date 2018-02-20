@@ -1,50 +1,17 @@
-<center>Ent-core gradle skeletons</center>
-==========================
+# Skeletons : generate ODE application's boilerplate
 
-This project aims to ease the task of programmers by providing several ent-core skeletons
-along with an easy-to-use gradle build system.
+This project aims at ease the bootstrap of ODE application's skeleton. 
 
-For more information on ent-core, please visit the GitHub repository at the following address :
-http://entcore.org
+NOTE: Browse https://opendigitaleducation.gitbooks.io/reference-manual/ to browse Open Digital Education Framework capabilites
 
+## How to use
 
-## Usage
+- install Gradle 1.6+
 
-### Dependencies :
-
-- Gradle 1.6
-
-### How to :
-
-- Open in an editor the file template-engine-properties and modify the contents to suit your needs
-- Launch the gradle task by typing in a terminal : ``gradle buildSkeleton``
+- Edit `template-engine-properties` file to suit your needs
+- Launch the command : ``gradle buildSkeleton``
 
 You will be guided through the skeleton generation which will prompt you several times for data.
-
-## File tree
-
-```
-.
-├── build.gradle
-|    ~> Gradle build file
-├── Readme.me
-|    ~> This readme file.
-├── template-engine.properties
-|    ~> Configuration file with pairs of value / keys
-|       used during the templating process.
-└── templates
-        ├── template_folder1
-        ├── template_folder2
-        |  
-        |   ~> N template folders, each one containing
-        |      a different template model.
-        |
-        └── template_folderN
-                  ├── template-engine-ignore
-                  |     ~> Files to ignore during the templating process.
-                  └── (TEMPLATE FILES & FOLDERS)
-
-```
 
 ## File details
 
@@ -83,6 +50,31 @@ You will be guided through the skeleton generation which will prompt you several
     -   **Ignore completely** the file or folder.<br>
         In this case, precede the file name with a ``>``.<br>
         For instance, the line ``>.DS_STORE`` makes the parser completely ignore files named *.DS_STORE*
+
+## File tree
+
+```
+.
+├── build.gradle
+|    ~> Gradle build file
+├── Readme.me
+|    ~> This readme file.
+├── template-engine.properties
+|    ~> Configuration file with pairs of value / keys
+|       used during the templating process.
+└── templates
+        ├── template_folder1
+        ├── template_folder2
+        |  
+        |   ~> N template folders, each one containing
+        |      a different template model.
+        |
+        └── template_folderN
+                  ├── template-engine-ignore
+                  |     ~> Files to ignore during the templating process.
+                  └── (TEMPLATE FILES & FOLDERS)
+
+```
 
 ## Templates provided
 
