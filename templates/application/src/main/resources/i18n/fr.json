@@ -1,0 +1,3 @@
+{
+	"${APPNAME.toLowerCase()}.title"					: "${APPNAME}"
+}

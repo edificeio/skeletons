@@ -12,209 +12,119 @@ buildscript {
     }
 }
 
-def createTemplate = { template_path, destination_path ->
+project.ext.set('templateFiles', [
+    "templates/application" : [
+        'build.gradle',
+        'gradle.properties',
+        'package.json',
+        'deployment/APPNAME/conf.json.template',
+        'src/main/resources/i18n/en.json',
+        'src/main/resources/i18n/fr.json',
+        'src/main/resources/public/ts/behaviours.ts',
+        'src/main/resources/mod.json',
+        'src/main/resources/view-src/APPNAME.html',
+        'src/main/java/ORGANISATION/APPNAME/APPNAME.java'
+    ]
+    // TODO : add widget file
+    ]
+)
 
-    logger.quiet "~> Starting templating engine, from template [${template_path}]"
+project.ext.set("bindings", [
+    "YEAR" : Calendar.getInstance().get(Calendar.YEAR),
+    'PORT' : '8130',
+    'ENTCORE_VERSION' : '2.1.0'
+])
 
-    //--------- [Loading step] ---------//
+def moveDirectory(destDir, fileNameArray) {
+    def arr = fileNameArray[0..fileNameArray.size() - 2]
+    if ('APPNAME' == arr[arr.size() - 1]) {
+        FileUtils.moveDirectory(
+            new File("${destDir}/${arr.join('/')}"),
+            new File("${destDir}/${arr[0..arr.size() - 2].join('/')}/${bindings['APPNAME'].toLowerCase()}"),
+        )
+    } else if ('ORGANISATION' == arr[arr.size() - 1]) {
+        
+        logger.info "${destDir}/${arr[0..arr.size() - 2].join('/')}/${bindings['ORGANISATION'].replaceAll('[.]','/')}"
+        FileUtils.moveDirectory(
+            new File("${destDir}/${arr.join('/')}"),
+            new File("${destDir}/${arr[0..arr.size() - 2].join('/')}/${bindings['ORGANISATION'].replaceAll('[.]','/')}"),
+        )
+    } 
+    if (arr.size() == 1) 
+        return
+    moveDirectory(destDir, arr)
+}
 
+def moveFile(destDir, fileName) {
+    def arr = fileName.split('/')
+    if (arr[arr.size() - 1].contains('APPNAME')) {
+        def newName = arr[arr.size() - 1].replace('APPNAME', bindings['APPNAME'].toLowerCase())
+        FileUtils.moveFile(
+            new File("${destDir}/${fileName}"),
+            new File("${destDir}/${arr[0..arr.size() - 2].join('/')}/${newName}")
+        )
+    }
+}
+
+def processTemplate(type, name, destinatioPath, namespace) {
+    // Copy template directroy
+    def destDir = "${destinatioPath}/${name}".replaceAll("//","/")
+    mkdir(dir: destDir)
+    copy {
+        from type
+        into destDir
+        include '**/*'
+    }
+    // Execute template engine with binding
+    bindings['APPNAME'] = name[0].toUpperCase() + name[1..-1].toLowerCase()
+    bindings['ORGANISATION'] = namespace
     def engine = new SimpleTemplateEngine()
-    def props  = new Properties()
+    templateFiles[type].each{fileName ->
+        def output = engine.createTemplate(new File("${destDir}/${fileName}")).make(bindings)
+        def fileWriter = new FileWriter("${destDir}/${fileName}")
+        fileWriter.write(output.toString())
+        fileWriter.close()
 
-    // Loading template properties
-    props.load(new FileInputStream(file('template-engine.properties')))
-    def bindings = [:]
-    props.propertyNames().each{ prop->
-        bindings[prop] = props.getProperty(prop)
+        // Rename templated fileName and directory
+        moveFile(destDir, fileName)
+        moveDirectory(destDir, fileName.split('/'))
     }
-    bindings["YEAR"] = Calendar.getInstance().get(Calendar.YEAR)
-
-    // APPNAME - ensure that the string is in lower case with first letter in upper case
-    bindings["APPNAME"] = bindings["APPNAME"][0].toUpperCase() + bindings["APPNAME"][1..-1].toLowerCase()
-
-    destination_path = destination_path + "/" + bindings["APPNAME"]
-
-    logger.quiet "~> [Loading] Destination : ${destination_path}"
-
-    logger.quiet "~> [Loading] Properties file loaded."
-
-    // Loading ignore list
-    // If a line begins with >, then the file is completely ignored.
-    // Otherwise, the file is copied without being parsed.
-    def ignored_directories     = []
-    def ignored_files           = []
-    def unparsed_directories    = []
-    def unparsed_files          = []
-
-    def template_ignore = file("${template_path}/template-engine-ignore")
-
-    template_ignore.eachLine{ line ->
-        def full_path = "${template_path}/${line}"
-        if(line.length() > 0 && file(full_path).isDirectory())
-            if(line[0] == '>')
-                ignored_directories.add(full_path[1..-1])
-            else
-                unparsed_directories.add(full_path)
-        else if(line.length() > 0)
-            if(line[0] == '>')
-                ignored_files.add(line[1..-1])
-            else
-                unparsed_files.add(line)
-    }
-
-    def isIgnoredDirectory = { dir ->
-        ignored_directories.any{ d -> file(d).getAbsolutePath().equals(dir.getAbsolutePath()) }
-    }
-    def isIgnoredFile = { file ->
-        ignored_files.contains(file.name)
-    }
-    def isUnparsedDirectory = { dir ->
-        unparsed_directories.any{ d -> file(d).getAbsolutePath().equals(dir.getAbsolutePath()) }
-    }
-    def isUnparsedFile = { file ->
-        unparsed_files.contains(file.name)
-    }
-
-    logger.quiet "~> [Loading] Ignore file loaded."
-
-    //--------- [Generating step] ---------//
-
-    // Creating destination directory
-    file("${destination_path}").mkdir()
-
-    // Apply recursively an action to all files & folders, children of baseDir.
-    def recursiveApply
-    recursiveApply = { baseDir, action, path = '' ->
-        baseDir.listFiles().each{ file ->
-            def newpath = action(path, file)
-            if(file.isDirectory() && !isIgnoredDirectory(file) && !isUnparsedDirectory(file))
-                recursiveApply(file, action, "${newpath}")
-        }
-    }
-
-    // Templating action to apply to a file or a directory, may return a modified path.
-    def generateTemplateAction = { path, fileitem ->
-
-        logger.quiet "~> [Generating] ${path}${fileitem.name} to ${destination_path}/${path}"
-
-        def directoryAction = { dir ->
-            if(bindings.containsKey(dir.name)){
-                //Special names that modify path.
-                def newDirectories = bindings[dir.name].replaceAll("[.]", "/").toLowerCase()
-                logger.quiet "------- ${dir.name} => ${newDirectories}"
-                file("${destination_path}/${path}${newDirectories}").mkdirs()
-                "${path}${newDirectories}/"
-            } else {
-                //Regular names.
-                file("${destination_path}/${path}${dir.name}").mkdir()
-                "${path}${dir.name}/"
-            }
-        }
-        def fileAction = { file ->
-            def specialName = bindings.find{ k, v -> file.name.contains(k) }
-            def destinationFile
-            if(specialName != null){
-                //Html and ts files in lower case
-                if(file.name.contains('html') || file.name.contains('ts')){
-                    destinationFile = new File("${destination_path}/${path}${file.name.replaceAll(specialName.key, specialName.value.toLowerCase())}")
-                    logger.quiet "------- ${file.name} => ${file.name.replaceAll(specialName.key, specialName.value.toLowerCase())}"
-                } else {
-                    destinationFile = new File("${destination_path}/${path}${file.name.replaceAll(specialName.key, specialName.value)}")
-                    logger.quiet "------- ${file.name} => ${file.name.replaceAll(specialName.key, specialName.value)}"
-                }
-            } else
-                destinationFile = new File("${destination_path}/${path}${file.name}")
-            def output = engine.createTemplate(file).make(bindings)
-            def fileWriter = new FileWriter(destinationFile)
-            fileWriter.write(output.toString())
-            fileWriter.close()
-
-            path
-        }
-
-        //TODO : REGEX COMPARISON
-        if(fileitem.isDirectory())
-            if(isIgnoredDirectory(fileitem)){
-                logger.quiet "\t(${fileitem.name} : Ignored)"
-                "${path}${fileitem.name}/"
-            } else if(isUnparsedDirectory(fileitem)) {
-                //Copy the directory contents
-                FileUtils.copyDirectory(fileitem, file("${destination_path}/${path}${fileitem.name}"))
-                logger.quiet "\t(${fileitem.name} : Unparsed)"
-                "${path}${fileitem.name}/"
-            } else {
-                directoryAction(fileitem)
-            }
-        else
-            if(isIgnoredFile(fileitem)){
-                logger.quiet "\t(${fileitem.name} : Ignored)"
-                path
-            } else if(isUnparsedFile(fileitem)) {
-                //Copy the file
-                FileUtils.copyFile(fileitem, file("${destination_path}/${path}${fileitem.name}"))
-                logger.quiet "\t(${fileitem.name} : Unparsed)"
-                "${path}${fileitem.name}"
-            } else {
-                fileAction(fileitem)
-            }
-    }
-
-    // Start processing
-    recursiveApply(file("${template_path}"), generateTemplateAction)
 
 }
 
-task buildSkeleton(description:'Generate a new project based on templates') << {
+def console = System.console()
 
-    def console = System.console()
-
-    //*--------- [Utility methods] ---------//
-
-    def integer_check = { min, max, str ->
-        try{
-            def i = Integer.parseInt(str)
-            i > min && i < max
-        } catch(e){
-            false
-        }
+def getValidatedInput = { condition, message, errormessage, postAction = {x -> x} ->
+    if (!console) {
+        logger.error "Cannot get console"
+        return
     }
-
-    def getValidatedInput = { condition, message, errormessage, postAction = {x -> x} ->
-        def result = ""
-        while(true){
-            result = console.readLine(message)
-            if(condition(result))
-                break
-            logger.error errormessage
-        }
-        postAction(result)
+    def result = ""
+    while(true){
+        result = console.readLine(message)
+        if(condition(result))
+            break
+        logger.error errormessage
     }
+    postAction(result)
+}
 
-    //-------------------------------------/*/
+task createApplication(description:"Create an apllication's boilerplate") << {
 
-    def separator = "------------------------------------------------------------------"
-    def templates = file('templates').listFiles().toList()
-    def displayTemplates = []
-    templates.eachWithIndex{ file , i -> displayTemplates.add("(${i}) : ${file.name}") }
-
-    if(console) {
-        println separator
-        println(displayTemplates)
-        def TEMPLATE_NUMBER = getValidatedInput(
-                integer_check.curry(-1, templates.size()),
-                '~> Please enter the template number : ',
-                "!> Please enter a valid number.",
-                { result -> Integer.parseInt(result) }
-        )
-        def DESTINATION_PATH = getValidatedInput(
-                { path -> file(path).exists() },
-                '~> Please enter the destination directory : ',
-                "!> Please enter a valid path.')"
-        )
-
-        createTemplate(templates[TEMPLATE_NUMBER], DESTINATION_PATH)
-    } else {
-        logger.error "!> Cannot get console."
-    }
-
+    def destinatioPath = getValidatedInput(
+        { input -> file(input).exists() },
+        " >> Enter the destination's path : ",
+        "!! Please enter a valid path"
+    )
+    def applicationName = getValidatedInput(
+        { input -> input ==~ /[a-zA-Z]+.*/ && !file("${destinatioPath}/${input}").exists() }, // TODO improve regexp
+        " >> Enter your application's name (ex: mySuperApp) : ",
+        "!! Please enter a valid name (it must match /[a-zA-Z]+.*/ and not exists in ${destinatioPath} )"
+    )
+    def namespace = getValidatedInput(
+        { input -> input ==~ /(?:[a-z]\d*(?:\.[a-z])?)+/ }, // TODO test /(?:[a-z]\d*(?:\.[a-z])?)+/​​​​​
+        " >> Enter your orgnisation's namesapce (ex : org.apache) : ",
+        "!! Please enter a valid namesapce (ex org.apache)"
+    )
+    processTemplate('templates/application', applicationName, destinatioPath, namespace)
 }
