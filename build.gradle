@@ -49,7 +49,6 @@ def moveDirectory(destDir, fileNameArray) {
         )
     } else if ('ORGANISATION' == arr[arr.size() - 1]) {
         
-        logger.info "${destDir}/${arr[0..arr.size() - 2].join('/')}/${bindings['ORGANISATION'].replaceAll('[.]','/')}"
         FileUtils.moveDirectory(
             new File("${destDir}/${arr.join('/')}"),
             new File("${destDir}/${arr[0..arr.size() - 2].join('/')}/${bindings['ORGANISATION'].replaceAll('[.]','/')}"),
@@ -66,8 +65,6 @@ def moveFile(destDir, fileName, binding) {
     if (arr[arr.size() - 1].contains(binding)) {
         def newName = arr[arr.size() - 1].replace(binding, bindings[binding].toLowerCase())
         arr = arr.size() > 1 ? arr[0..arr.size() - 2] : []
-        logger.info "${destDir}/${fileName}"
-        logger.info "${destDir}/${arr.join('/')}/${newName}"
         FileUtils.moveFile(
             new File("${destDir}/${fileName}"),
             new File("${destDir}/${arr.join('/')}/${newName}")
@@ -77,12 +74,7 @@ def moveFile(destDir, fileName, binding) {
 
 def processTemplate(type, destDir) {
     // Copy template directroy
-    mkdir(dir: destDir)
-    copy {
-        from type
-        into destDir
-        include '**/*'
-    }
+    FileUtils.copyDirectory(new File(type), new File(destDir), false)
     // Execute template engine with binding
     def engine = new SimpleTemplateEngine()
     templateFiles[type].each{fileName ->
@@ -143,7 +135,7 @@ task createWidget(description:"Create an widget's boilerplate") << {
         "!! Please enter a valid path"
     )
     def name = getValidatedInput(
-        { input -> input ==~ /[a-zA-Z]+.*/ && !file("${destinatioPath}/${input}").exists() }, // TODO improve regexp
+        { input -> input ==~ /[a-zA-Z]+.*/ && !file("${destinatioPath}/${input}-widget").exists() }, // TODO improve regexp
         " >> Enter your widget's name (ex: SmallAgenda) : ",
         "!! Please enter a valid name (it must match /[a-zA-Z]+.*/ and not exists in ${destinatioPath} )"
     )
