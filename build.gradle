@@ -1,5 +1,4 @@
 import groovy.text.SimpleTemplateEngine
-import java.util.Properties
 import java.io.FileWriter
 import org.apache.commons.io.FileUtils
 
