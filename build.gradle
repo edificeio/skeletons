@@ -25,16 +25,21 @@ project.ext.set('templateFiles', [
         'src/main/resources/view-src/APPNAME.html',
         'src/main/java/ORGANISATION/APPNAME/APPNAME.java'
     ]
-    // TODO : add widget file
+    ,"templates/widget" : [
+        'WIDGETNAME-widget.js',
+        'WIDGETNAME-widget.html',
+        'i18n/en.json',
+        'i18n/fr.json',
     ]
-)
+])
 
 project.ext.set("bindings", [
     "YEAR" : Calendar.getInstance().get(Calendar.YEAR),
-    'PORT' : '8130',
+    'PORT' : '8130', // TODO improve port management
     'ENTCORE_VERSION' : '2.1.0'
 ])
 
+// Use just for application
 def moveDirectory(destDir, fileNameArray) {
     def arr = fileNameArray[0..fileNameArray.size() - 2]
     if ('APPNAME' == arr[arr.size() - 1]) {
@@ -55,20 +60,23 @@ def moveDirectory(destDir, fileNameArray) {
     moveDirectory(destDir, arr)
 }
 
-def moveFile(destDir, fileName) {
+// Use both for application and widget
+def moveFile(destDir, fileName, binding) {
     def arr = fileName.split('/')
-    if (arr[arr.size() - 1].contains('APPNAME')) {
-        def newName = arr[arr.size() - 1].replace('APPNAME', bindings['APPNAME'].toLowerCase())
+    if (arr[arr.size() - 1].contains(binding)) {
+        def newName = arr[arr.size() - 1].replace(binding, bindings[binding].toLowerCase())
+        arr = arr.size() > 1 ? arr[0..arr.size() - 2] : []
+        logger.info "${destDir}/${fileName}"
+        logger.info "${destDir}/${arr.join('/')}/${newName}"
         FileUtils.moveFile(
             new File("${destDir}/${fileName}"),
-            new File("${destDir}/${arr[0..arr.size() - 2].join('/')}/${newName}")
+            new File("${destDir}/${arr.join('/')}/${newName}")
         )
     }
 }
 
-def processTemplate(type, name, destinatioPath, namespace) {
+def processTemplate(type, destDir) {
     // Copy template directroy
-    def destDir = "${destinatioPath}/${name}".replaceAll("//","/")
     mkdir(dir: destDir)
     copy {
         from type
@@ -76,20 +84,13 @@ def processTemplate(type, name, destinatioPath, namespace) {
         include '**/*'
     }
     // Execute template engine with binding
-    bindings['APPNAME'] = name[0].toUpperCase() + name[1..-1].toLowerCase()
-    bindings['ORGANISATION'] = namespace
     def engine = new SimpleTemplateEngine()
     templateFiles[type].each{fileName ->
         def output = engine.createTemplate(new File("${destDir}/${fileName}")).make(bindings)
         def fileWriter = new FileWriter("${destDir}/${fileName}")
         fileWriter.write(output.toString())
         fileWriter.close()
-
-        // Rename templated fileName and directory
-        moveFile(destDir, fileName)
-        moveDirectory(destDir, fileName.split('/'))
     }
-
 }
 
 def console = System.console()
@@ -110,13 +111,12 @@ def getValidatedInput = { condition, message, errormessage, postAction = {x -> x
 }
 
 task createApplication(description:"Create an apllication's boilerplate") << {
-
     def destinatioPath = getValidatedInput(
         { input -> file(input).exists() },
         " >> Enter the destination's path : ",
         "!! Please enter a valid path"
     )
-    def applicationName = getValidatedInput(
+    def name = getValidatedInput(
         { input -> input ==~ /[a-zA-Z]+.*/ && !file("${destinatioPath}/${input}").exists() }, // TODO improve regexp
         " >> Enter your application's name (ex: mySuperApp) : ",
         "!! Please enter a valid name (it must match /[a-zA-Z]+.*/ and not exists in ${destinatioPath} )"
@@ -126,5 +126,31 @@ task createApplication(description:"Create an apllication's boilerplate") << {
         " >> Enter your orgnisation's namesapce (ex : org.apache) : ",
         "!! Please enter a valid namesapce (ex org.apache)"
     )
-    processTemplate('templates/application', applicationName, destinatioPath, namespace)
+    bindings['APPNAME'] = name[0].toUpperCase() + name[1..-1].toLowerCase()
+    bindings['ORGANISATION'] = namespace
+    def destDir = "${destinatioPath}/${name}".replaceAll("//","/")
+    processTemplate('templates/application', destDir)
+    templateFiles['templates/application'].each{fileName ->
+        moveFile(destDir, fileName, 'APPNAME')
+        moveDirectory(destDir, fileName.split('/'))
+    }
+}
+
+task createWidget(description:"Create an widget's boilerplate") << {
+    def destinatioPath = getValidatedInput(
+        { input -> file(input).exists() },
+        " >> Enter the destination's path : ",
+        "!! Please enter a valid path"
+    )
+    def name = getValidatedInput(
+        { input -> input ==~ /[a-zA-Z]+.*/ && !file("${destinatioPath}/${input}").exists() }, // TODO improve regexp
+        " >> Enter your widget's name (ex: SmallAgenda) : ",
+        "!! Please enter a valid name (it must match /[a-zA-Z]+.*/ and not exists in ${destinatioPath} )"
+    )
+    bindings['WIDGETNAME'] = name.toLowerCase()
+    def destDir = "${destinatioPath}/${name}-widget".replaceAll("//","/")
+    processTemplate('templates/widget', destDir)
+    templateFiles['templates/widget'].each{fileName ->
+        moveFile(destDir, fileName, 'WIDGETNAME')
+    }
 }
