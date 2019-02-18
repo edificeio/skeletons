@@ -17,7 +17,7 @@
   },
   "homepage": "",
   "dependencies": {
-    "entcore": "^2.1.0",
+    "entcore": "^3.3.6",
     "@types/core-js": "0.9.42",
     "awesome-typescript-loader": "3.2.1",
     "axios": "0.16.2",

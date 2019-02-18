@@ -41,7 +41,7 @@ defaultTasks = ['assemble']
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
-project.ext.moduleName = "$modowner~$modname~$version"
+project.ext.moduleName = "\$modowner~\$modname~\$version"
 
 configurations {
   provided
@@ -106,7 +106,7 @@ task modZip( type: Zip, dependsOn: 'pullInDeps', description: 'Package the modul
   classifier = "mod"
   description = "Assembles a vert.x module"
   destinationDir = project.file('build/libs')
-  archiveName = "${modname}-${version}" + ".zip"
+  archiveName = "\$modname-\$version" + ".zip"
   from copyMod
 }
 
