@@ -15,6 +15,9 @@ project.ext.set('templateFiles', [
     "templates/application" : [
         'build.gradle',
         'gradle.properties',
+        'build.sh',
+        'docker-compose.yml',
+        'JenkinsFile',
         'package.json',
         'deployment/APPNAME/conf.json.template',
         'src/main/resources/i18n/en.json',
@@ -35,7 +38,7 @@ project.ext.set('templateFiles', [
 project.ext.set("bindings", [
     "YEAR" : Calendar.getInstance().get(Calendar.YEAR),
     'PORT' : '8130', // TODO improve port management
-    'ENTCORE_VERSION' : '2.1.0'
+    'ENTCORE_VERSION' : '3.3.9'
 ])
 
 // Use just for application
@@ -63,6 +66,9 @@ def moveFile(destDir, fileName, binding) {
     def arr = fileName.split('/')
     if (arr[arr.size() - 1].contains(binding)) {
         def newName = arr[arr.size() - 1].replace(binding, bindings[binding].toLowerCase())
+        if (arr[arr.size() - 1] == 'APPNAME.java') {
+            newName = newName[0].toUpperCase() + newName[1..-1].toLowerCase()
+        }
         arr = arr.size() > 1 ? arr[0..arr.size() - 2] : []
         FileUtils.moveFile(
             new File("${destDir}/${fileName}"),
@@ -102,11 +108,7 @@ def getValidatedInput = { condition, message, errormessage, postAction = {x -> x
 }
 
 task createApplication(description:"Create an apllication's boilerplate") << {
-    def destinatioPath = getValidatedInput(
-        { input -> file(input).exists() },
-        " >> Enter the destination's path : ",
-        "!! Please enter a valid path"
-    )
+    def destinatioPath = "./out"
     def name = getValidatedInput(
         { input -> input ==~ /[a-zA-Z]+.*/ && !file("${destinatioPath}/${input}").exists() }, // TODO improve regexp
         " >> Enter your application's name (ex: mySuperApp) : ",
@@ -128,11 +130,7 @@ task createApplication(description:"Create an apllication's boilerplate") << {
 }
 
 task createWidget(description:"Create an widget's boilerplate") << {
-    def destinatioPath = getValidatedInput(
-        { input -> file(input).exists() },
-        " >> Enter the destination's path : ",
-        "!! Please enter a valid path"
-    )
+    def destinatioPath = "./out"
     def name = getValidatedInput(
         { input -> input ==~ /[a-zA-Z]+.*/ && !file("${destinatioPath}/${input}-widget").exists() }, // TODO improve regexp
         " >> Enter your widget's name (ex: SmallAgenda) : ",

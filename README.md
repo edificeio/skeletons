@@ -6,11 +6,11 @@ NOTE: Read https://opendigitaleducation.gitbooks.io/reference-manual/ to browse 
 
 ## Create an application 
 
-- Launch the command : `gradle createApplication`
+- Launch the command : `./build.sh createApplication`
 - Follow instructions prompted in the shell 
 
 ## Create a widget 
 
-- Launch the command : `gradle createWidget`
+- Launch the command : `./build.sh createWidget`
 - Follow instructions prompted in the shell 
 
