@@ -1,16 +1,11 @@
 # Skeletons
 
-This project aims at ease the bootstrap of ODE application's skeleton. 
+This project aims at ease the bootstrap of ODE applications and widgets
 
-NOTE: Read https://opendigitaleducation.gitbooks.io/reference-manual/ to browse Open Digital Education Framework capabilites
 
-## Create an application 
+# How to use ?
 
-- Launch the command : `./build.sh createApplication`
-- Follow instructions prompted in the shell 
+- Create an application : `./build.sh createApplication`
+- Create a widget : `./build.sh createWidget`
 
-## Create a widget 
-
-- Launch the command : `./build.sh createWidget`
-- Follow instructions prompted in the shell 
-
+Follow instructions prompted in the shell. Your skeleton will be generated in 'out/' directory.
